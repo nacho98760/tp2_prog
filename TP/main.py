@@ -14,8 +14,11 @@ def main():
             print("3. Evento 3")
             evento_elegido = int(input("Elija un evento al que asistir: "))
 
-            while evento_elegido < 0 or evento_elegido > 3:
+            while evento_elegido < 1 or evento_elegido > 3:
                 print("Numero de evento invalido. Intente nuevamente")
+                print("1. Evento 1")
+                print("2. Evento 2")
+                print("3. Evento 3")
                 evento_elegido = int(input("Elija un evento al que asistir: "))
 
             match evento_elegido: 
@@ -35,7 +38,7 @@ def main():
 
     while id_valido == False:
         try:
-            id = int(input("Ingrese su id (numero del 1 al 9999)"))
+            id = int(input("Ingrese su ID (numero del 1 al 9999)"))
             
             while id < 1 or id > 9999:
                 print("Numero de id no valido. Intente nuevamente.")
@@ -57,20 +60,22 @@ def main():
 
     while edad_valida == False:
         try:
-            edad = int(input("Ingrese su edad"))
+            edad = int(input("Ingrese su edad: "))
 
             while edad < 13 or edad > 100:
                 print("Edad invalida. Intente nuevamente")
-                edad = int(input("Ingrese su edad"))
+                edad = int(input("Ingrese su edad: "))
             
             edad_valida = True
             
         except ValueError:
             print("Valor no valido")
 
+    diccionario_de_usuarios[id] = {}
+    diccionario_de_usuarios.update({id: [nombre, edad]})
+    with open("log.txt", "a", encoding="utf-8") as archivo_de_guardado_txt:
+        archivo_de_guardado_txt.write(str(diccionario_de_usuarios[id]))
 
-    diccionario_de_usuarios[id] = {nombre, edad}
-    print(diccionario_de_usuarios)
 
 main()
 

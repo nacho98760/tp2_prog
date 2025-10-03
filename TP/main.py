@@ -6,6 +6,7 @@ diccionario_de_usuarios = {}
 
 def main():
 
+    print(diccionario_de_usuarios)
     evento_valido = False
     id_valido = False
     edad_valida = False
@@ -48,12 +49,14 @@ def main():
                 id = int(input("Ingrese su id (numero del 1 al 9999): "))
 
             id_ya_registrado = False
-            
+
             with open("log.json", "r", encoding="utf-8", newline='') as archivo_de_guardado_json:
+
                 data = json.load(archivo_de_guardado_json)
+                
                 for item in data:
                     if str(id) == item:
-                        id_ya_registrado = True
+                       id_ya_registrado = True
                 
                 while id_ya_registrado == True or id < 1 or id > 9999:
                     print("Numero de id ya registrado o inválido. Intente nuevamente.")
@@ -100,7 +103,8 @@ def main():
         data[str(id)] = diccionario_de_usuarios[id]
         
         with open("log.json", "w", encoding="utf-8") as archivo_de_guardado_json:
-            json.dump(data, archivo_de_guardado_json, ensure_ascii=False, indent=4)
+            json.dump(data, archivo_de_guardado_json)
+
             
 main()
 

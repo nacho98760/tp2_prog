@@ -28,7 +28,7 @@ def validar_evento(lista_de_eventos: list):
 def validar_nombre():
     nombre = input("Ingrese su nombre: ") 
     
-    while nombre.isdigit()  or len(nombre) == 0:
+    while nombre.isdigit() or len(nombre) == 0:
         print("Nombre invalido")
         nombre = input("Ingrese su nombre: ")
 
@@ -61,8 +61,8 @@ def generar_id():
     
     while id_valido == False:
         archivo_de_guardado_json = open("log.json", "r", encoding="utf-8", newline='')
-
         data = json.load(archivo_de_guardado_json)
+
         for item in data:
             if str(id) == item:
                 id_ya_registrado = True
@@ -119,9 +119,106 @@ def validar_contraseña_de_admin():
 
     return True
 
+
+def ver_registros_completos():
+    archivo_json = open("log.json", "r", encoding="utf-8", newline='')
+    data = json.load(archivo_json)
+
+    for x, item in enumerate(data):
+        print("Usuario " + str(x + 1) + ":")
+        print("Nombre: " + data[item][0])
+        print("Edad: " + str(data[item][1]))
+        print("Evento al que asistío: " + data[item][2])
+        print("-----------------------------------")
+
+    archivo_json.close()
+
+
+def ver_registro_especifico():
+    archivo_json = open("log.json", "r", encoding="utf-8", newline='')
+    data = json.load(archivo_json)
+
+    id_valido = False
+
+    while id_valido == False:
+        try:
+            id_elegido = int(input("Ingrese el id del usuario que desea encontrar: "))
+            for item in data:
+                if str(id_elegido) == item:
+                    id_valido = True
+                    break     
+            
+            print("El id no se ha encontrado.")
+
+        except ValueError:
+            print("El valor ingresado no es valido.")
+
+    
+    print("Usuario encontrado")
+    print("Nombre: " + data[str(id_elegido)][0])
+    print("Edad: " + str(data[str(id_elegido)][1]))
+    print("Evento al que asistio: " + data[str(id_elegido)][2])
+    print("---------------------")
+
+    datos_del_usuario = ["nombre", "edad", "evento"]
+
+    mostrar_opciones_de_modificacion(datos_del_usuario)
+    
+    opcion_valida = False
+
+    while opcion_valida == False:
+        try:
+            opcion_elegida = int(input("Elija una opcion de las anteriores"))
+
+            while opcion_elegida < 1 or opcion_elegida > len(datos_del_usuario):
+                print("Opcion no valida. Por favor, intente nuevamente.")
+                mostrar_opciones_de_modificacion(datos_del_usuario)
+                opcion_elegida = int(input("Elija una opcion de las anteriores"))
+            
+            #--------------------------------------------------------------------------------------------------------------------------------
+            #--------------------------------------------------------------------------------------------------------------------------------
+            #--------------------------------------------------------------------------------------------------------------------------------
+            #--------------------------------------------------------------------------------------------------------------------------------
+            #--------------------------------------------------------------------------------------------------------------------------------
+            #--------------------------------------------------------------------------------------------------------------------------------
+
+
+        except ValueError:
+            print("El valor ingresado no es valido. Por favor, intente nuevamente.")
+    
+
+
+def mostrar_opciones_de_modificacion(datos_del_usuario):
+    for x in range(len(datos_del_usuario)):
+        print(str(x + 1) + ". " + "Modificar " + datos_del_usuario[x] + " del usuario")
+
+    print(str(len(datos_del_usuario) + 1) + ". Salir") 
+
 def main_admin():
     if validar_contraseña_de_admin():
-        print("Contraseña valida")
+        
+        print("1. Ver registros completos de usuarios")
+        print("2. Modificar un registro de usuario")
+        opcion_elegida = int(input("Elija una opcion para continuar: "))
+
+        opcion_valida = False
+
+        while opcion_valida == False:
+            try:
+                while opcion_elegida < 1 or opcion_elegida > 2:
+                    print("Opción no válida. Por favor, intente nuevamente.")
+                    print("1. Ver registros completos de usuarios")
+                    print("2. Modificar un registro de usuario")
+                    opcion_elegida = int(input("Elija una opcion para continuar: "))
+                
+                opcion_valida = True
+                if opcion_elegida == 1:
+                    ver_registros_completos()
+                else:
+                    ver_registro_especifico()
+
+            except ValueError:
+                print("El valor ingresado no es válido. Por favor, intente nuevamente.")
     else:
         elegir_modo_para_entrar()
 

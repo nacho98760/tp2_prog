@@ -1,16 +1,24 @@
 import json
 import random
 
+def devolver_lista_de_datos(evento_o_entrada):
+    archivo_de_eventos_y_entradas_json = open("eventos_y_entradas.json", "r", encoding="utf-8", newline='')
+    data = json.load(archivo_de_eventos_y_entradas_json)
 
-def devolver_lista_de_eventos():
-    lista_de_eventos = ["Copa algorítmica", "Partido de Fútbol", "UADE Esports"]
-    return lista_de_eventos
+    lista_de_datos = []
 
+    for i in data:
+        for j in data[i]:
+            lista_de_datos.append(j[evento_o_entrada])
+    
+    archivo_de_eventos_y_entradas_json.close()
+    return lista_de_datos
 
 
 def imprimir_opciones(lista_de_opciones: list):
     for x, evento in enumerate(lista_de_opciones):
         print(str(x + 1) + ". " + evento)
+
 
 def validar_evento(lista_de_eventos: list):
     evento_valido = False
@@ -19,17 +27,61 @@ def validar_evento(lista_de_eventos: list):
         try:
             imprimir_opciones(lista_de_eventos)
             evento_elegido = int(input("Elija un evento al que asistir: "))
+            lista_de_entradas = devolver_lista_de_datos(1)
+            entradas_restantes_de_evento_elegido = lista_de_entradas[evento_elegido - 1]
 
-            while evento_elegido < 1 or evento_elegido > 3:
+            while evento_elegido < 1 or evento_elegido > len(lista_de_eventos) or entradas_restantes_de_evento_elegido < 0:
                 print("Numero de evento invalido. Intente nuevamente")
                 imprimir_opciones(lista_de_eventos)
                 evento_elegido = int(input("Elija un evento al que asistir: "))
-
+                lista_de_entradas = devolver_lista_de_datos(1)
+                entradas_restantes_de_evento_elegido = lista_de_entradas[evento_elegido - 1]
+            
+            cantidad_de_entradas_elegida = verificar_cantidad_de_entradas()
+            while cantidad_de_entradas_elegida > entradas_restantes_de_evento_elegido:
+                print("La cantidad de entradas elegida excede la cantidad disponible para el evento elegido. Por favor ingrese una cantidad valida.")
+                cantidad_de_entradas_elegida = verificar_cantidad_de_entradas()
+            
+            entradas_restantes_de_evento_elegido -= cantidad_de_entradas_elegida
             evento_valido = True
-            return lista_de_eventos[evento_elegido - 1]
 
         except ValueError:
             print("Valor ingresado no valido")
+    
+    archivo_de_eventos_y_entradas_json = open("eventos_y_entradas.json", "r", encoding="utf-8", newline='')
+    data = json.load(archivo_de_eventos_y_entradas_json)
+                
+    for i in data:
+        data[i][evento_elegido - 1][1] = entradas_restantes_de_evento_elegido
+    
+    archivo_de_eventos_y_entradas_json.close()
+
+    archivo_de_eventos_y_entradas_json_actualizado = open("eventos_y_entradas.json", "w", encoding="utf-8", newline='')
+    json.dump(data, archivo_de_eventos_y_entradas_json_actualizado, indent=4, ensure_ascii=False)
+
+    archivo_de_eventos_y_entradas_json_actualizado.close()
+
+    return lista_de_eventos[evento_elegido - 1]
+
+
+def verificar_cantidad_de_entradas():
+    cantidad_maxima_de_entradas = 10
+
+    entrada_valida = False
+
+    while entrada_valida == False:
+        try: 
+            cantidad_de_entradas = int(input("Ingrese la cantidad de entradas que desea comprar (maximo: " + str(cantidad_maxima_de_entradas) + "): "))
+            
+            while cantidad_de_entradas < 1 or cantidad_de_entradas > cantidad_maxima_de_entradas:
+                print("La cantidad de entradas elegida no es valida.")
+                cantidad_de_entradas = int(input("Ingrese la cantidad de entradas que desea comprar (maximo: " + str(cantidad_maxima_de_entradas) + "): "))
+            
+            entrada_valida = True
+            return cantidad_de_entradas
+
+        except ValueError:
+            print("El valor ingresado no es valido.")
 
 
 def validar_nombre():
@@ -89,7 +141,7 @@ def generar_id():
 
 
 def main_usuario():
-    lista_de_eventos = devolver_lista_de_eventos()
+    lista_de_eventos = devolver_lista_de_datos(0)
     diccionario_de_usuarios = {}
 
     evento_elegido = validar_evento(lista_de_eventos)
@@ -161,7 +213,7 @@ def ver_registro_especifico():
 
         except ValueError:
             print("El valor ingresado no es valido.")
-
+ 
     print("Usuario encontrado")
     print("Nombre: " + data[str(id_elegido)][0])
     print("Edad: " + str(data[str(id_elegido)][1]))
@@ -239,7 +291,7 @@ def modificar_edad(id_elegido, data):
 
 
 def modificar_evento(id_elegido, data):
-    lista_de_eventos_actual = devolver_lista_de_eventos()
+    lista_de_eventos_actual = devolver_lista_de_datos(0)
 
     evento_valido = False
     while evento_valido == False:

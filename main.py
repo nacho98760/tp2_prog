@@ -41,26 +41,35 @@ def buscar_si_quedan_entradas(data, evento):
 def validar_evento(lista_de_eventos):
     evento_valido = False
 
+    entradas_restantes_de_evento_elegido = 0
+
     while evento_valido == False:
         try:
             imprimir_opciones(lista_de_eventos)
             evento_elegido = int(input("Elija un evento al que asistir: "))
 
-            if evento_elegido > 0 and evento_elegido < len(lista_de_eventos):
-                lista_de_entradas = devolver_lista_de_datos(1)
-                entradas_restantes_de_evento_elegido = lista_de_entradas[evento_elegido - 1]
+            if evento_elegido < 0 or evento_elegido > len(lista_de_eventos):
+                print("Evento elegido no valido.")
+                return
 
-            eventos = devolver_lista_de_datos(0)
-
+            lista_de_entradas = devolver_lista_de_datos(1)
+            entradas_restantes_de_evento_elegido = lista_de_entradas[evento_elegido - 1]
+            
             while evento_elegido < 1 or evento_elegido > len(lista_de_eventos) or entradas_restantes_de_evento_elegido <= 0:
+                print(evento_elegido)
+                print(len(lista_de_eventos))
+                print(entradas_restantes_de_evento_elegido)
                 print('---------------------------------------')
                 print("El numero de evento es invalido o no quedan entradas disponibles. Intente nuevamente")
                 imprimir_opciones(lista_de_eventos)
                 evento_elegido = int(input("Elija un evento al que asistir: "))
                 
-                if evento_elegido > 0 and evento_elegido < len(lista_de_eventos):
-                    lista_de_entradas = devolver_lista_de_datos(1)
-                    entradas_restantes_de_evento_elegido = lista_de_entradas[evento_elegido - 1]
+                if evento_elegido < 0 or evento_elegido > len(lista_de_eventos):
+                    print("Evento elegido no valido.")
+                    return
+                
+                lista_de_entradas = devolver_lista_de_datos(1)
+                entradas_restantes_de_evento_elegido = lista_de_entradas[evento_elegido - 1]
             
             cantidad_de_entradas_elegida = verificar_cantidad_de_entradas()
             while cantidad_de_entradas_elegida > entradas_restantes_de_evento_elegido:
@@ -115,7 +124,7 @@ def verificar_cantidad_de_entradas():
 def validar_nombre():
     nombre = input("Ingrese su nombre: ") 
     
-    while nombre.isdigit() or len(nombre) == 0:
+    while nombre.isdigit() or len(nombre) == 0 or nombre.strip() == "":
         print("Nombre invalido")
         nombre = input("Ingrese su nombre: ")
 
@@ -305,7 +314,7 @@ def buscar_dato_a_modificar(opcion_elegida, id_elegido):
 def modificar_nombre(id_elegido, data):
     nuevo_nombre = input("Ingrese un nuevo nombre para reemplazar al existente: ")
     
-    if (nuevo_nombre.isdigit() or nuevo_nombre == ""): return
+    if (nuevo_nombre.isdigit() or nuevo_nombre.strip() == ""): return
 
     data[str(id_elegido)][0] = nuevo_nombre
 
@@ -343,6 +352,10 @@ def modificar_evento(id_elegido, data):
 
             nuevo_evento = int(input("Elija un nuevo evento de las opciones anteriores para reemplazar al existente: "))
 
+            if nuevo_evento < 0 or nuevo_evento > len(lista_de_eventos_actual):
+                print("Evento elegido no valido.")
+                return
+            
             lista_de_entradas = devolver_lista_de_datos(1)
             entradas_restantes_de_evento_elegido = lista_de_entradas[nuevo_evento - 1]
 
@@ -350,7 +363,7 @@ def modificar_evento(id_elegido, data):
                 print("El número de evento es invalido o no quedan entradas disponibles. Intente nuevamente.")
                 print("--------------------------------------------")
                 for x, i in enumerate(lista_de_eventos_actual):
-                    print(str(x + 1) + ". " + evento + buscar_si_quedan_entradas(data_eventos, evento))
+                    print(str(x + 1) + ". " + i + buscar_si_quedan_entradas(data_eventos, i))
                 nuevo_evento = int(input("Elija un nuevo evento de las opciones anteriores para reemplazar al existente: "))
 
             evento_valido = True
@@ -440,7 +453,7 @@ def calcular_dias_del_mes(mes):
 def agregar_evento(): 
     evento = input("Ingrese un nombre para el evento a agregar: ")
 
-    while evento.isdigit() or evento == "":
+    while evento.isdigit() or evento.strip() == "":
         print("Nombre no válido.")
         evento = input("Ingrese un nombre para el evento a agregar: ")
 

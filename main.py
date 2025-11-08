@@ -72,11 +72,8 @@ def validar_evento(lista_de_eventos):
                 entradas_restantes_de_evento_elegido = lista_de_entradas[evento_elegido - 1]
             
             cantidad_de_entradas_elegida = verificar_cantidad_de_entradas()
-            while cantidad_de_entradas_elegida > entradas_restantes_de_evento_elegido:
-                print("La cantidad de entradas elegida excede la cantidad disponible para el evento elegido. Por favor ingrese una cantidad valida.")
-                cantidad_de_entradas_elegida = verificar_cantidad_de_entradas()
-            
-            entradas_restantes_de_evento_elegido -= cantidad_de_entradas_elegida
+
+            ingresar_cantidad_de_entradas(entradas_restantes_de_evento_elegido, evento_elegido, cantidad_de_entradas_elegida)
             evento_valido = True
 
         except ValueError:
@@ -84,12 +81,22 @@ def validar_evento(lista_de_eventos):
     
     lista_de_precios = devolver_lista_de_datos(3)
     precio_final = lista_de_precios[evento_elegido - 1] * cantidad_de_entradas_elegida
-    
+
+    return lista_de_eventos[evento_elegido - 1], cantidad_de_entradas_elegida, precio_final
+
+
+def ingresar_cantidad_de_entradas(entradas_restantes_de_evento_elegido, evento_elegido, cantidad_de_entradas_elegida):
+    while cantidad_de_entradas_elegida > entradas_restantes_de_evento_elegido:
+        print("La cantidad de entradas elegida excede la cantidad disponible para el evento elegido. Por favor ingrese una cantidad valida.")
+        cantidad_de_entradas_elegida = verificar_cantidad_de_entradas()
+            
+    nueva_cantidad_de_entradas = entradas_restantes_de_evento_elegido - cantidad_de_entradas_elegida
+
     archivo_de_eventos_y_entradas_json = open("eventos_y_entradas.json", "r", encoding="utf-8", newline='')
     data = json.load(archivo_de_eventos_y_entradas_json)
                 
     for i in data:
-        data[i][evento_elegido - 1][1] = entradas_restantes_de_evento_elegido
+        data[i][evento_elegido - 1][1] = nueva_cantidad_de_entradas
     
     archivo_de_eventos_y_entradas_json.close()
 
@@ -98,8 +105,22 @@ def validar_evento(lista_de_eventos):
 
     archivo_de_eventos_y_entradas_json_actualizado.close()
 
-    return lista_de_eventos[evento_elegido - 1], cantidad_de_entradas_elegida, precio_final
+def devolver_entradas_a_evento_anterior(cantidad_de_entradas_elegida, evento_anterior):
+    archivo_de_eventos_y_entradas_json = open("eventos_y_entradas.json", "r", encoding="utf-8", newline='')
+    data = json.load(archivo_de_eventos_y_entradas_json)
+                
+    lista_de_eventos = devolver_lista_de_datos(0)
+    index_del_evento_anterior = lista_de_eventos.index(evento_anterior)
 
+    for i in data:
+        data[i][index_del_evento_anterior][1] += cantidad_de_entradas_elegida
+    
+    archivo_de_eventos_y_entradas_json.close()
+
+    archivo_de_eventos_y_entradas_json_actualizado = open("eventos_y_entradas.json", "w", encoding="utf-8", newline='')
+    json.dump(data, archivo_de_eventos_y_entradas_json_actualizado, indent=4, ensure_ascii=False)
+
+    archivo_de_eventos_y_entradas_json_actualizado.close()
 
 def verificar_cantidad_de_entradas():
     cantidad_maxima_de_entradas = 9
@@ -260,7 +281,7 @@ def ver_registro_especifico():
     print("Nombre: " + data[str(id_elegido)][0])
     print(str(data[str(id_elegido)][1]))
     print("Evento al que asiste: " + data[str(id_elegido)][2])
-    print("Cantidad de entradas: " + data[str(id_elegido)][3])
+    print("Cantidad de entradas: " + str(data[str(id_elegido)][3]))
     print("---------------------")
 
     datos_del_usuario = ["nombre", "edad", "evento", "entradas"]
@@ -338,6 +359,8 @@ def modificar_edad(id_elegido, data):
 
 
 def modificar_evento(id_elegido, data):
+    evento_actual = data[str(id_elegido)][2]
+
     lista_de_eventos_actual = devolver_lista_de_datos(0)
     
     archivo_de_eventos_y_entradas_json = open("eventos_y_entradas.json", "r", encoding="utf-8", newline='')
@@ -366,12 +389,24 @@ def modificar_evento(id_elegido, data):
                     print(str(x + 1) + ". " + i + buscar_si_quedan_entradas(data_eventos, i))
                 nuevo_evento = int(input("Elija un nuevo evento de las opciones anteriores para reemplazar al existente: "))
 
+                if nuevo_evento < 0 or nuevo_evento > len(lista_de_eventos_actual):
+                    print("Evento elegido no valido.")
+                    return
+            
+                lista_de_entradas = devolver_lista_de_datos(1)
+                entradas_restantes_de_evento_elegido = lista_de_entradas[nuevo_evento - 1]
+
             evento_valido = True
 
         except ValueError:
             print("El valor ingresado no es válido. Por favor, intente nuevamente.")
+    
 
+    cantidad_de_entradas_elegida = verificar_cantidad_de_entradas()
+    ingresar_cantidad_de_entradas(entradas_restantes_de_evento_elegido, nuevo_evento, cantidad_de_entradas_elegida)
+    devolver_entradas_a_evento_anterior(cantidad_de_entradas_elegida, evento_actual)
     data[str(id_elegido)][2] = lista_de_eventos_actual[nuevo_evento - 1]
+    data[str(id_elegido)][3] = "Entradas: " + str(cantidad_de_entradas_elegida)
 
 
 def modificar_entradas(id_elegido, data):
@@ -409,7 +444,6 @@ def modificar_entradas(id_elegido, data):
 
     for i in data_eventos_entradas:
         data_eventos_entradas[i][index_de_evento_elegido][1] += cantidad_de_entradas_restantes_actualizada
-    
 
     archivo_de_eventos_y_entradas_json.close()
 

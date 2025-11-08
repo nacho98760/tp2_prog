@@ -335,7 +335,9 @@ def buscar_dato_a_modificar(opcion_elegida, id_elegido):
 def modificar_nombre(id_elegido, data):
     nuevo_nombre = input("Ingrese un nuevo nombre para reemplazar al existente: ")
     
-    if (nuevo_nombre.isdigit() or nuevo_nombre.strip() == ""): return
+    while nuevo_nombre.isdigit() or nuevo_nombre.strip() == "": 
+        print("El nombre no es válido. Por favor, intente nuevamente.")
+        nuevo_nombre = input("Ingrese un nuevo nombre para reemplazar al existente: ")
 
     data[str(id_elegido)][0] = nuevo_nombre
 

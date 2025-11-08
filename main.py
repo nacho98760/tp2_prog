@@ -45,8 +45,10 @@ def validar_evento(lista_de_eventos):
         try:
             imprimir_opciones(lista_de_eventos)
             evento_elegido = int(input("Elija un evento al que asistir: "))
-            lista_de_entradas = devolver_lista_de_datos(1)
-            entradas_restantes_de_evento_elegido = lista_de_entradas[evento_elegido - 1]
+
+            if evento_elegido > 0 and evento_elegido < len(lista_de_eventos):
+                lista_de_entradas = devolver_lista_de_datos(1)
+                entradas_restantes_de_evento_elegido = lista_de_entradas[evento_elegido - 1]
 
             eventos = devolver_lista_de_datos(0)
 
@@ -55,8 +57,10 @@ def validar_evento(lista_de_eventos):
                 print("El numero de evento es invalido o no quedan entradas disponibles. Intente nuevamente")
                 imprimir_opciones(lista_de_eventos)
                 evento_elegido = int(input("Elija un evento al que asistir: "))
-                lista_de_entradas = devolver_lista_de_datos(1)
-                entradas_restantes_de_evento_elegido = lista_de_entradas[evento_elegido - 1]
+                
+                if evento_elegido > 0 and evento_elegido < len(lista_de_eventos):
+                    lista_de_entradas = devolver_lista_de_datos(1)
+                    entradas_restantes_de_evento_elegido = lista_de_entradas[evento_elegido - 1]
             
             cantidad_de_entradas_elegida = verificar_cantidad_de_entradas()
             while cantidad_de_entradas_elegida > entradas_restantes_de_evento_elegido:
